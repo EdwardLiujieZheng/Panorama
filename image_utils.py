@@ -5,7 +5,6 @@ from scipy.ndimage import distance_transform_edt
 
 def detect_features(img, show_img=False):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
     sift = cv2.SIFT_create()
     key, des = sift.detectAndCompute(img_gray, None)
 
@@ -41,7 +40,7 @@ def warp_img(img1, key1, img2, key2, matches, show_img=False):
     pts1 = np.float32([key1[m.queryIdx].pt for m in matches])
     pts2 = np.float32([key2[m.trainIdx].pt for m in matches])
     H, mask = cv2.findHomography(pts2, pts1, cv2.RANSAC, 5.0)
-    img2_warped = cv2.warpPerspective(img2, H, (img1.shape[1] * 2, img1.shape[0]))
+    img2_warped = cv2.warpPerspective(img2, H, (int(img1.shape[1] * 1.5), img1.shape[0]))
 
     if show_img:
         cv2.imshow("warped", img2_warped)
@@ -79,32 +78,35 @@ def get_distance_transform(img_rgb):
     return dist / dist.max() * 255.0
 
 
-if __name__ == "__main__":
-    img1 = cv2.imread("data/yosemite1.jpg")
-    img2 = cv2.imread("data/yosemite2.jpg")
 
+def blend_img(img1, img2, show_alpha=False, show_img=False):
+    img1_larger = np.zeros((img1.shape[0], int(img1.shape[1] * 1.5), 3), np.uint8)
+    img1_larger[:img1.shape[0], :img1.shape[1]] = img1.copy()
+    alpha = get_distance_transform(img1_larger) / 255.0
+    alpha[:, :int(img1.shape[1] * 2 / 3)] = 1
+    if show_alpha:
+        cv2.imshow("alpha", alpha)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    out = (img1_larger * alpha + img2 * (1 - alpha)) / 255.0
+    if show_img:
+        cv2.imshow("out", out)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    return out
+
+
+
+def make_panorama(img1, img2, show_img=False):
     key1, des1 = detect_features(img1)
     key2, des2 = detect_features(img2)
-
     matches = match_features(des1, des2)
-
     img2_warped = warp_img(img1, key1, img2, key2, matches)
-
-    # img2_warped[:img1.shape[0], :img1.shape[1]] = img1.copy()
-    # cv2.imshow("out", img2_warped)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    out = blend_img(img1, img2_warped, False, show_img)
+    out = (out * 255.0).astype(np.uint8)
+    return out
 
 
-    dist = get_distance_transform(img2_warped)
-    img2_blended = img2_warped * (dist + 50)
-    img2_blended = (img2_blended / dist.max() * 255.0).astype("uint8")
-    img1_larger = np.zeros((img1.shape[0], img1.shape[1] * 2, 3), np.uint8)
-    img1_larger[:img1.shape[0], :img1.shape[1]] = img1.copy()
 
-    dist1 = get_distance_transform(img1_larger)
-    img1_blended = (img1_larger / 255.0) * (dist1 / 255.0)
-    out = cv2.addWeighted(img1_blended, 1, img2_blended, 1, 0)
-    cv2.imshow("out", out)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()

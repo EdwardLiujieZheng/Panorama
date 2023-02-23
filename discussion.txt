@@ -1,0 +1,10 @@
+This file is to discuss the following 3 questions on my panorama result "my_panorama.jpg"
+1. Describe and discuss any issues that appear in your panorama.
+2. Why do the issues appear?
+3. Which of the steps above need to be improved to fix those?
+
+1. In my panorama, one major issue is that the middle-right part of the image,
+where the bare wall with no windows locates, has been horizontally stretched.
+2. The issue appears because there are few salient features on that wall for good alignment,
+so that features are matched incorrectly and then the image are warped incorrectly.
+3. I need more robust feature matching algorithm to fix the issue.
