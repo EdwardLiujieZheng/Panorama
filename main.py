@@ -34,6 +34,7 @@ if __name__ == "__main__":
     img9 = make_panorama(img6, img7)
 
     img10 = make_panorama(img8, img9)
+    cv2.imwrite("img10.jpg", img10)
 
     img10 = img10[:,:-800]
     cv2.imwrite("my_panorama.jpg", img10)
