@@ -1,3 +1,6 @@
-# panorama
+# Panorama Stitcher
+This project creates panorama from a sequence of images
 
-Panorama stitching from images.
+## Installation
+
+## Run a demo
