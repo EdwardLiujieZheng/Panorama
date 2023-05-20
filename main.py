@@ -8,7 +8,7 @@ from stitcher import stitch
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', type=str, default='data/images', help='directory of the input images')
 parser.add_argument('--output', type=str, default='data/out/panorama.jpg', help='directory and name of the output panorama')
-parser.add_argument('--crop', type=tuple, default=(0, 10, 0, 400), help='crop the output by (up, down, left, right)')
+parser.add_argument('--crop', type=int, nargs=4, default=(0, 10, 0, 400), help='crop the output by (up, down, left, right)')
 args = parser.parse_args()
 
 # make panorama
