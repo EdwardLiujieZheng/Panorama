@@ -99,7 +99,7 @@ def blend_img(img1, img2, show_alpha=False, show_img=False):
 
 
 
-def make_panorama(img1, img2, show_img=False):
+def stitch(img1, img2, show_img=False):
     key1, des1 = detect_features(img1)
     key2, des2 = detect_features(img2)
     matches = match_features(des1, des2)
